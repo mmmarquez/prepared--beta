@@ -1,16 +1,39 @@
 <template>
   <section class="container">
 
-    <div class="section--block" :style="{ width: windowWidth + 'px' , height: windowHeight + 'px', background: block.bgColor }" @click="nextSlide($event, index, block)" v-for="(block, index) in blocks" :key="index" :id="index">
+    <div class="section--block" :style="{ width: windowWidth + 'px' , height: windowHeight + 'px', background: block.bgColor }" @click="nextSlide($event, index, block)"
+    v-for="(block, index) in blocks" :key="index" :id="index"
+    >
+
       <div class="block--wrapper">
 
-        <div class="block--inner">
-          <h1 class="title">
-            Section :: {{index}}
-          </h1>
-          <h2 class="subtitle">
-            Width: {{windowWidth}} | Height: {{windowHeight}}
-          </h2>
+        <div class="block--inner" >
+
+
+          <div class="grid--block">
+            <div class="grid--item" @mouseenter="onMouse($event)" @mouseleave="overMouse($event)" :class="{shadow: onM}">
+              <!-- <img src="https://unsplash.it/600/600" alt="" @mouseover="myMethod($event)"> -->
+              <h1 class="title">
+                :: {{index}}
+              </h1>
+              <transition name="zoom">
+
+              <div class="bg--image" v-if="onM">
+
+              </div>
+            </transition>
+
+            </div>
+
+            <div class="grid--item">
+              <!-- <img src="https://unsplash.it/600/500" alt=""> -->
+              <h2 class="subtitle">
+                <!-- Width: {{windowWidth}} | Height: {{windowHeight}} -->
+              </h2>
+            </div>
+
+          </div>
+
         </div>
 
       </div>
@@ -20,124 +43,307 @@
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue';
+import Logo from "~/components/Logo.vue";
+
+var VueScrollTo;
+
+// let easings = {
+//     'ease': [0.25, 0.1, 0.25, 1.0],
+//     'linear': [0.00, 0.0, 1.00, 1.0],
+//     'ease-in': [0.42, 0.0, 1.00, 1.0],
+//     'ease-out': [0.00, 0.0, 0.58, 1.0],
+//     'ease-in-out': [0.42, 0.0, 0.58, 1.0]
+// }
+
+var options = {
+	easing: "ease-in-out",
+	offset: 0,
+	cancelable: true,
+	onDone: function() {
+		// scrolling is done
+	},
+	onCancel: function() {
+		// scrolling has been interrupted
+	},
+	x: false,
+	y: true
+};
 
 export default {
-  components: {
-    Logo
-  },
-  data() {
-    return {
-      msg: 'Hello World! This is a Event listener test.',
-      windowWidth: 0,
-      windowHeight: 0,
-      blocks: [
-        {
-          title: 'some tests.....',
-          subtitle: 'more tests....',
-          bgColor: '#00bcd4'
-        },
-        {
-          title: 'some tests.....',
-          subtitle: 'more tests....',
-          bgColor: '#e91e63'
-        },
-        {
-          title: 'some tests.....',
-          subtitle: 'more tests....',
-          bgColor: '#cddc39'
-        },
-        {
-          title: 'some tests.....',
-          subtitle: 'more tests....',
-          bgColor: '#3f51b5'
-        },
-        {
-          title: 'some tests.....',
-          subtitle: 'more tests....',
-          bgColor: '#607d8b'
-        },
-        {
-          title: 'some tests.....',
-          subtitle: 'more tests....',
-          bgColor: '#ffc107'
-        },
-        {
-          title: 'some tests.....',
-          subtitle: 'more tests....',
-          bgColor: '#009688'
-        }
-      ]
-    };
-  },
-  mounted() {
-    this.$nextTick(x => {
-      window.addEventListener('resize', this.getWindowWidth);
-      window.addEventListener('resize', this.getWindowHeight);
-      //Init
-      this.getWindowWidth();
-      this.getWindowHeight();
-    });
-  },
-  methods: {
-    scrollTo(element, to, duration) {
-      if (duration <= 0) return;
-      var difference = to - element.scrollTop;
-      var perTick = difference / duration * 10;
-      setTimeout(x => {
-        element.scrollTop = element.scrollTop + perTick;
-        if (element.scrollTop === to) return;
-        scrollTo(element, to, duration - 10);
-      }, 10);
-    },
-    getWindowWidth(event) {
-      this.windowWidth = document.documentElement.clientWidth;
-    },
-    getWindowHeight(event) {
-      this.windowHeight = document.documentElement.clientHeight;
-    },
-    nextSlide(event, index, block) {
-      let currentElement = event.target;
-      let currentIndex = index;
-      let nextIndex = currentIndex + 1;
-      let totalBlocks = this.blocks.length;
-      let nextElement = document.getElementById('0');
-      if (nextIndex < totalBlocks) {
-        let nextElement = document.getElementById(nextIndex);
-        this.scrollTo(document.body, nextElement.offsetTop, 600);
-      }
-      console.log(nextIndex);
-      if (nextIndex === totalBlocks) {
-        console.log('hmmmm');
-        this.scrollTo(document.body, document.getElementById('0'), 600);
-      }
-    }
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.getWindowWidth);
-    window.removeEventListener('resize', this.getWindowHeight);
-  }
+	components: {
+		Logo
+	},
+	data() {
+		return {
+			msg: "Hello World! This is a Event listener test.",
+			windowWidth: 0,
+			windowHeight: 0,
+			onM: false,
+			overM: true,
+			blocks: [
+				{
+					title: "some tests.....",
+					subtitle: "more tests....",
+					bgColor: "#00bcd4"
+				},
+				{
+					title: "some tests.....",
+					subtitle: "more tests....",
+					bgColor: "#e91e63"
+				},
+				{
+					title: "some tests.....",
+					subtitle: "more tests....",
+					bgColor: "#cddc39"
+				},
+				{
+					title: "some tests.....",
+					subtitle: "more tests....",
+					bgColor: "#3f51b5"
+				},
+				{
+					title: "some tests.....",
+					subtitle: "more tests....",
+					bgColor: "#607d8b"
+				},
+				{
+					title: "some tests.....",
+					subtitle: "more tests....",
+					bgColor: "#ffc107"
+				},
+				{
+					title: "some tests.....",
+					subtitle: "more tests....",
+					bgColor: "#009688"
+				}
+			]
+		};
+	},
+	mounted() {
+		this.$nextTick(x => {
+			window.addEventListener("resize", this.getWindowWidth);
+			window.addEventListener("resize", this.getWindowHeight);
+			this.getWindowWidth();
+			this.getWindowHeight();
+		});
+	},
+	methods: {
+		onMouse(event) {
+			console.log(event.target);
+			console.log("in");
+			setTimeout(x => {
+				this.onM = !this.onM;
+				// this.overM = false;
+			}, 1000);
+		},
+		overMouse(event) {
+			console.log(event.target);
+			console.log("out");
+			setTimeout(x => {
+				this.onM = false;
+				// this.overM = !this.overM
+			}, 200);
+		},
+		getWindowWidth(event) {
+			this.windowWidth = document.documentElement.clientWidth;
+		},
+		getWindowHeight(event) {
+			this.windowHeight = document.documentElement.clientHeight;
+		},
+		nextSlide(event, index, block) {
+			let currentElement = event.target;
+			let currentIndex = index;
+			let nextIndex = currentIndex + 1;
+			let totalBlocks = this.blocks.length;
+			let nextElement = document.getElementById("0");
+			if (nextIndex < totalBlocks) {
+				let nextElement = document.getElementById(nextIndex);
+				this.$scrollTo(nextElement, 600, options);
+			}
+			if (nextIndex === totalBlocks) {
+				this.$scrollTo(document.getElementById("0"), 600, options);
+			}
+		}
+	},
+	beforeDestroy() {
+		window.removeEventListener("resize", this.getWindowWidth);
+		window.removeEventListener("resize", this.getWindowHeight);
+	}
 };
 </script>
 
 <style>
+
+
+
+
+
 
 body {
   margin: 0;
   color: white;
 }
 
+.bg--image {
+  background-image: url('https://unsplash.it/600/600');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  display: none;
+}
+
+
+.grid--block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  flex-flow: row;
+  flex-basis: 50%;
+  position: relative;
+}
+
+.grid--item {
+  margin: 2%;
+  position: relative;
+  border: 1px solid white;
+padding: 1%;
+  width: 100%;
+  height: 100%;
+  max-height: 50%;
+  transition: 1s all ease;
+  box-shadow: inset 0px 0px 0px 0px transparent;
+
+}
+
+.grid--item img {
+  width: 100%;
+  max-width: 100%;
+  max-width: 50vh;
+  display: block;
+  height: 35vh;
+
+}
+
+.grid--item.shadow {
+  box-shadow: inset 3px 3px 15px 3px rgba(0,0,0,0.3) !important;
+  transition: 1s all ease;
+}
+
 .section--block {
-  border: 1px solid red;
+  /*border: 1px solid red;*/
   cursor: s-resize;
 }
+
+
+
+/*Section One*/
+.section--block:nth-child(1) .grid--block {
+/*align-items: flex-start;*/
+}
+.section--block:nth-child(1) .grid--block .grid--item:nth-child(1) {
+align-self: flex-end;
+}
+.section--block:nth-child(1) .grid--block .grid--item:nth-child(2) {
+  align-self: flex-start;
+}
+
+/*Section One*/
+.section--block:nth-child(2) .grid--block {
+/*align-items: flex-start;*/
+}
+.section--block:nth-child(2) .grid--block .grid--item:nth-child(1) {
+align-self: flex-start;
+}
+.section--block:nth-child(2) .grid--block .grid--item:nth-child(2) {
+  align-self: flex-end;
+}
+
+/*Section One*/
+.section--block:nth-child(3) .grid--block .grid--item.shadow {
+  /*box-shadow: inset 3px 3px 15px 3px black !important;*/
+
+/*align-items: flex-start;*/
+}
+.section--block:nth-child(3) .grid--block .grid--item:nth-child(1){
+align-self: center;
+}
+.section--block:nth-child(3) .grid--block .grid--item:nth-child(2) {
+  align-self: center;
+}
+
+/*Section One*/
+.section--block:nth-child(4) .grid--block {
+/*align-items: flex-start;*/
+flex-flow: column;
+}
+.section--block:nth-child(4) .grid--block .grid--item:nth-child(1) {
+align-self: flex-end;
+width: 50%;
+}
+.section--block:nth-child(4) .grid--block .grid--item:nth-child(2) {
+  align-self: flex-start;
+}
+
+/*Section One*/
+.section--block:nth-child(5) .grid--block {
+align-items: flex-start;
+}
+.section--block:nth-child(5) .grid--block .grid--item:nth-child(1) {
+align-self: flex-end;
+}
+.section--block:nth-child(5) .grid--block .grid--item:nth-child(1) img {
+align-self: flex-end;
+max-height: 35vh;
+}
+.section--block:nth-child(5) .grid--block .grid--item:nth-child(2) {
+  align-self: center;
+}
+
+/*Section One*/
+.section--block:nth-child(6) .grid--block {
+/*align-items: flex-start;*/
+}
+.section--block:nth-child(6) .grid--block .grid--item:nth-child(1) {
+align-self: flex-end;
+}
+.section--block:nth-child(6) .grid--block .grid--item:nth-child(2) {
+  align-self: baseline;
+}
+
+/*Section One*/
+.section--block:nth-child(7) .grid--block {
+/*align-items: flex-start;*/
+}
+.section--block:nth-child(7) .grid--block .grid--item:nth-child(1) {
+align-self: center;
+}
+.section--block:nth-child(7) .grid--block .grid--item:nth-child(2) {
+  align-self: flex-start;
+}
+
+
+.section--block .grid--block .grid--item:nth-child(1) {
+align-self: flex-end;
+border: 0px;
+}
+
 
 .section--block:last-child {
   cursor: n-resize;
 }
 
 .block--wrapper {
-  pointer-events: none;
+  /*pointer-events: none;*/
   width: 100%;
   height: 100%;
   display: flex;
@@ -149,6 +355,10 @@ body {
 .block--inner {
   padding: 2%;
   border: 1px solid white;
+  max-width: 90%;
+  width: 100%;
+  height: 100%;
+  max-height: 90%;
 }
 
 .container {
@@ -179,4 +389,10 @@ body {
 .links {
   padding-top: 15px;
 }
+
+
+
+
+
+
 </style>
